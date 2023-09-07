@@ -22,6 +22,30 @@ const Boards = styled.div`
   gap: 10px;
 `;
 
+const CoponentAddButton = styled.div`
+  position: fixed;
+  width: 50px;
+  height: 50px;
+  background: radial-gradient(circle, white 1%, rgba(255, 255, 255, 0) 90%);
+  border-radius: 50px;
+  top: 5%;
+  right: 5%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.5s ease;
+  &:hover {
+    transform: rotate(0.5turn);
+    background-color: #a9fff8;
+  }
+`;
+
+const Icon = styled.img`
+  src: ${(p) => p.src};
+  width: ${(p) => p.width};
+`;
+
 function App() {
   const [toDos, setToDos] = useRecoilState(toDoState);
 
@@ -62,6 +86,9 @@ function App() {
   return (
     <>
       <DragDropContext onDragEnd={onDragEnd}>
+        <CoponentAddButton>
+          <Icon src="./icons/add.png" width="20px" />
+        </CoponentAddButton>
         <Wrapper>
           <Boards>
             {Object.keys(toDos).map((k) => (

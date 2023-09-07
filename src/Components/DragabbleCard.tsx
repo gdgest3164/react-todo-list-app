@@ -6,10 +6,19 @@ const Card = styled.div<IDraggingProps>`
   border-radius: 5px;
   margin-bottom: 5px;
   padding: 10px 10px;
-  background-color: ${(props) =>
-    props.$isDragging ? "#74b9ff" : props.theme.cardColor};
+  border: 1px solid "#4b9ff";
+  background-color: ${(props) => props.theme.cardColor};
   box-shadow: ${(props) =>
     props.$isDragging ? "0px 2px 5px rgba(0,0,0, 0.5)" : "none"};
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 400;
+`;
+
+const Icon = styled.img`
+  src: ${(p) => p.src};
+  width: 15px;
 `;
 
 interface IDraggingProps {
@@ -24,18 +33,21 @@ interface IDraggabbleCardProps {
 
 function DragabbleCard({ index, toDoId, toDoText }: IDraggabbleCardProps) {
   return (
-    <Draggable key={toDoId} draggableId={String(toDoId)} index={index}>
-      {(magic, snapshot) => (
-        <Card
-          $isDragging={snapshot.isDragging}
-          ref={magic.innerRef}
-          {...magic.dragHandleProps}
-          {...magic.draggableProps}
-        >
-          {toDoText}
-        </Card>
-      )}
-    </Draggable>
+    <>
+      <Draggable key={toDoId} draggableId={String(toDoId)} index={index}>
+        {(magic, snapshot) => (
+          <Card
+            $isDragging={snapshot.isDragging}
+            ref={magic.innerRef}
+            {...magic.dragHandleProps}
+            {...magic.draggableProps}
+          >
+            {toDoText}
+            <Icon src="./icons/trash.png" />
+          </Card>
+        )}
+      </Draggable>
+    </>
   );
 }
 
