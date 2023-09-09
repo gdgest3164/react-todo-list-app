@@ -1,7 +1,7 @@
 import { atom, selector } from "recoil";
 
 export interface ITodo {
-  id: number;
+  id: any;
   text: string;
 }
 
@@ -12,8 +12,10 @@ interface IToDoState {
 export const toDoState = atom<IToDoState>({
   key: "Doto",
   default: {
-    "To Do": [],
-    Doing: [],
-    Done: [],
+    "1dd": [],
+    "2aa": [],
+    "3aa": [],
+    "4aa": [],
+    "5aa": [],
   },
 });

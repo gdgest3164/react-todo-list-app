@@ -1,14 +1,13 @@
-import { Droppable } from "react-beautiful-dnd";
+import { Draggable, Droppable } from "react-beautiful-dnd";
 import DragabbleCard from "./DragabbleCard";
 import styled from "styled-components";
 import { useForm } from "react-hook-form";
 import { ITodo, toDoState } from "../atoms";
 import { useSetRecoilState } from "recoil";
-import Modal from "react-modal";
-import { useState } from "react";
 
 const Wrapper = styled.div`
-  width: 300px;
+  width: 100%;
+  min-width: 300px;
   padding-top: 10px;
   /* background-color: ${(props) => props.theme.boardColor}; */
   background-color: rgba(190, 190, 190, 0.5);
@@ -16,6 +15,7 @@ const Wrapper = styled.div`
   min-height: 230px;
   display: flex;
   flex-direction: column;
+  flex-wrap: wrap;
 `;
 
 const Title = styled.h2`
@@ -50,6 +50,19 @@ const Area = styled.div<IAreaProps>`
   padding: 20px;
 `;
 
+const DelBtn = styled.button<{ boardId: string }>`
+  background-color: transparent;
+  border: 0;
+  position: absolute;
+  cursor: pointer;
+`;
+
+const Icon = styled.img`
+  src: ${(p) => p.src};
+  width: ${(p) => p.width};
+  transform: rotate(45deg);
+`;
+
 const Form = styled.form``;
 
 interface IAreaProps {
@@ -60,16 +73,17 @@ interface IAreaProps {
 interface IBoardProps {
   toDos: ITodo[];
   boardId: string;
+  index: number;
 }
 
 interface IForm {
   toDo: string;
 }
 
-function Board({ toDos, boardId }: IBoardProps) {
-  const [modalIsOpen, setModalIsOpen] = useState(false);
+function Board({ toDos, boardId, index }: IBoardProps) {
   const setTodos = useSetRecoilState(toDoState);
   const { register, setValue, handleSubmit } = useForm<IForm>();
+
   const onValid = ({ toDo }: IForm) => {
     const newTodo = {
       id: Date.now(),
@@ -84,34 +98,47 @@ function Board({ toDos, boardId }: IBoardProps) {
     setValue("toDo", "");
   };
 
+  const onSubmit = (del_id: number) => {
+    // console.log(+boardId - 1 + "", del_id);
+    setTodos((allBoards) => {
+      return { ...allBoards, [boardId]: allBoards[boardId].filter((_, idx) => idx !== del_id) };
+    });
+  };
+
+  const closeBtn = () => {
+    setTodos((allBoards) => {
+      const updatedBoards = { ...allBoards };
+      delete updatedBoards[boardId];
+      return updatedBoards;
+    });
+  };
+
   return (
     <>
-      <Wrapper>
-        <Title>{boardId}</Title>
-        <Form onSubmit={handleSubmit(onValid)}>
-          <Input {...register("toDo", { required: true })} type="text" />
-        </Form>
-        <Droppable droppableId={boardId}>
-          {(magic, info) => (
-            <Area
-              $isDraggingOver={info.isDraggingOver}
-              $draggingFromThis={Boolean(info.draggingFromThisWith)}
-              ref={magic.innerRef}
-              {...magic.droppableProps}
-            >
-              {toDos.map((toDo, index) => (
-                <DragabbleCard
-                  key={toDo.id}
-                  index={index}
-                  toDoId={toDo.id}
-                  toDoText={toDo.text}
-                />
-              ))}
-              {magic.placeholder}
-            </Area>
-          )}
-        </Droppable>
-      </Wrapper>
+      <Draggable draggableId={boardId} index={index}>
+        {(provided) => (
+          <Wrapper ref={provided.innerRef} {...provided.draggableProps}>
+            <Title {...provided.dragHandleProps}>{boardId}</Title>
+            <DelBtn boardId={boardId} onClick={closeBtn}>
+              <Icon src="./icons/add.png" width="20px" />
+            </DelBtn>
+
+            <Form onSubmit={handleSubmit(onValid)}>
+              <Input {...register("toDo", { required: true })} type="text" />
+            </Form>
+            <Droppable droppableId={boardId}>
+              {(magic, info) => (
+                <Area $isDraggingOver={info.isDraggingOver} $draggingFromThis={Boolean(info.draggingFromThisWith)} ref={magic.innerRef} {...magic.droppableProps}>
+                  {toDos.map((toDo, index) => (
+                    <DragabbleCard key={toDo.id} index={index} toDoId={toDo.id} toDoText={toDo.text} onSubmit={onSubmit} />
+                  ))}
+                  {magic.placeholder}
+                </Area>
+              )}
+            </Droppable>
+          </Wrapper>
+        )}
+      </Draggable>
     </>
   );
 }
