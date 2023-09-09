@@ -1,0 +1,10 @@
+{
+  "files": {
+    "main.js": "/todo_challenge/static/js/main.105855c1.js",
+    "index.html": "/todo_challenge/index.html",
+    "main.105855c1.js.map": "/todo_challenge/static/js/main.105855c1.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.105855c1.js"
+  ]
+}
